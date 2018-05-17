@@ -35,11 +35,22 @@ define(function () {
 					var $fieldset = previousProvider(parentParameter, container, $input).parent();
 					$input.attr('readonly', 'readonly');
 
+					// Register a live validation of organisation
+					var ouId = 'service:scm:ou';
+					configuration.validators[ouId] = current.validateIdRepositoryCreateMode;
+
+					// Create the input corresponding to the first part of the final repository name
+					var $ouInput = $('<input class="form-control" type="text" id="' + ouId + '" required autocomplete="off">');
+					cProviders.standard({
+						id: ouId,
+						mandatory: true
+					}, $fieldset, $ouInput);
+
 					// Register a live validation of project
 					var projectId = 'service:scm:project';
 					configuration.validators[projectId] = current.validateIdRepositoryCreateMode;
 
-					// Create the input corresponding to the last part of the final group name
+					// Create the input corresponding to the last part of the final repository name
 					var $projectInput = $('<input class="form-control" type="text" id="' + projectId + '" required autocomplete="off">');
 					cProviders.standard({
 						id: projectId,
@@ -47,16 +58,7 @@ define(function () {
 					}, $fieldset, $projectInput);
 
 
-					// Register a live validation of project
-					var ouId = 'service:scm:ou';
-					configuration.validators[ouId] = current.validateIdRepositoryCreateMode;
-
-					// Create the input corresponding to the last part of the final group name
-					var $ouInput = $('<input class="form-control" type="text" id="' + ouId + '" required autocomplete="off">');
-					cProviders.standard({
-						id: ouId,
-						mandatory: true
-					}, $fieldset, $ouInput);
+					
 				};
 			} else {
 				current.$super('registerXServiceSelect2')(configuration, id, 'service/scm/git/', null, true, null, false);
