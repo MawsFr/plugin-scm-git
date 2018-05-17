@@ -2,8 +2,4 @@ id;owner.id;data;mandatory;type;mode;secured
 service:scm:git:url;service:scm:git;;true;TEXT;;
 service:scm:git:user;service:scm:git;;true;TEXT;;true
 service:scm:git:password;service:scm:git;;true;TEXT;;true
-service:scm:git:repository;service:scm:git;;true;TEXT;;
-service:scm:git:clientname;service:scm:git;;true;TEXT;CREATE;
-service:scm:git:projectname;service:scm:git;;true;TEXT;CREATE;
-service:scm:git:ldapgroups;service:scm:git;;true;TEXT;CREATE;
 service:scm:git:index;service:scm:git;;false;BOOL;;
