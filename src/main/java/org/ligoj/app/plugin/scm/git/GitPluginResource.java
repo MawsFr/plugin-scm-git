@@ -6,8 +6,10 @@ import java.net.URL;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -23,6 +25,10 @@ import org.eclipse.jgit.util.HttpSupport;
 import org.ligoj.app.plugin.scm.AbstractIndexBasedPluginResource;
 import org.ligoj.app.plugin.scm.ScmResource;
 import org.ligoj.app.plugin.scm.ScmServicePlugin;
+import org.ligoj.app.plugin.scm.ScriptContext;
+import org.ligoj.app.resource.node.ParameterResource;
+import org.ligoj.app.resource.plugin.CurlRequest;
+import org.ligoj.bootstrap.core.resource.BusinessException;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 import org.ligoj.bootstrap.resource.system.configuration.ConfigurationResource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +68,7 @@ public class GitPluginResource extends AbstractIndexBasedPluginResource implemen
 	 */
 	public GitPluginResource() {
 		super(KEY, "git");
+		createUrl = "create_git";
 	}
 
 	@Override
@@ -91,6 +98,28 @@ public class GitPluginResource extends AbstractIndexBasedPluginResource implemen
 	public void configureConnectionFactory() {
 		// Ignore SSL verification
 		HttpTransport.setConnectionFactory(new InsecureHttpConnectionFactory());
+	}
+
+	@Override
+	public void create(int subscription) throws Exception {
+		// Create the git repository
+		Map<String, String> parameters = pvResource.getSubscriptionParameters(subscription);
+		System.out.println(parameters.toString());
+
+		ScriptContext context = new ScriptContext();
+		context.setScriptId(createUrl);
+		context.setArgs(parameters);
+		final CurlRequest request = new CurlRequest(HttpMethod.POST,
+				StringUtils.appendIfMissing(parameters.get(parameterUrl), "/"), ParameterResource.toJSon(context),
+				HttpHeaders.CONTENT_TYPE + ":" + MediaType.APPLICATION_JSON);
+		request.setSaveResponse(true);
+		
+		// check if creation success
+		if (!newCurlProcessor(parameters).process(request)) {
+			throw new BusinessException(parameterRepository, simpleName + "-repository",
+					parameters.get(parameterRepository));
+		}
+
 	}
 
 	/**
