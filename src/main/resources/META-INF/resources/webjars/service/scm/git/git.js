@@ -3,6 +3,7 @@ define(function () {
 
 		configureSubscriptionParameters: function (configuration, $container) {
 			current.registerIdRepositorySelect2(configuration, $container, 'service:scm:repository');
+			current.registerIdLdapGroupsSelect2(configuration, $container, 'service:scm:ldapgroups');
 		},
 
 		/**
@@ -103,6 +104,10 @@ define(function () {
 
 			// For now return true for the immediate validation system, even if the Ajax call may fail
 			return true;
+		},
+		
+		registerIdLdapGroupsSelect2: function (configuration, $container, id) {
+			current.$super('registerXServiceSelect2')(configuration, id, 'service/id/ldap/group/subscriptions/' + 1, null, true, null, false);
 		}
 	};
 	return current;
