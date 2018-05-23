@@ -2,6 +2,8 @@ define(function () {
 	var current = {
 
 		configureSubscriptionParameters: function (configuration, $container) {
+			current.registerIdOu(configuration, $container, 'service:scm:ou');
+			current.registerIdProject(configuration, $container, 'service:scm:project');
 			current.registerIdRepositorySelect2(configuration, $container, 'service:scm:repository');
 			current.registerIdLdapGroupsSelect2(configuration, $container, 'service:scm:ldapgroups');
 		},
@@ -35,31 +37,6 @@ define(function () {
 					parentParameter.description = null;
 					var $fieldset = previousProvider(parentParameter, container, $input).parent();
 					$input.attr('readonly', 'readonly');
-
-					// Register a live validation of organisation
-					var ouId = 'service:scm:ou';
-					configuration.validators[ouId] = current.validateIdRepositoryCreateMode;
-
-					// Create the input corresponding to the first part of the final repository name
-					var $ouInput = $('<input class="form-control" type="text" id="' + ouId + '" required autocomplete="off">');
-					cProviders.standard({
-						id: ouId,
-						mandatory: true
-					}, $fieldset, $ouInput);
-
-					// Register a live validation of project
-					var projectId = 'service:scm:project';
-					configuration.validators[projectId] = current.validateIdRepositoryCreateMode;
-
-					// Create the input corresponding to the last part of the final repository name
-					var $projectInput = $('<input class="form-control" type="text" id="' + projectId + '" required autocomplete="off">');
-					cProviders.standard({
-						id: projectId,
-						mandatory: false
-					}, $fieldset, $projectInput);
-
-
-					
 				};
 			} else {
 				current.$super('registerXServiceSelect2')(configuration, id, 'service/scm/git/', null, true, null, false);
@@ -108,6 +85,16 @@ define(function () {
 		
 		registerIdLdapGroupsSelect2: function (configuration, $container, id) {
 			current.$super('registerXServiceSelect2')(configuration, id, 'service/id/ldap/group/subscriptions/' + 1, null, true, null, false);
+		},
+		
+		registerIdOu: function (configuration, $container, id) {
+			configuration.validators[id] = current.validateIdRepositoryCreateMode;
+			// Do other things specific to Ou
+		},
+		
+		registerIdProject: function (configuration, $container, id) {
+			// Do other things specific to Project
+			configuration.validators[id] = current.validateIdRepositoryCreateMode;
 		}
 	};
 	return current;
