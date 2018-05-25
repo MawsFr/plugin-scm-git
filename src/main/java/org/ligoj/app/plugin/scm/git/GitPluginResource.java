@@ -106,6 +106,26 @@ public class GitPluginResource extends AbstractIndexBasedPluginResource implemen
 		Map<String, String> parameters = pvResource.getSubscriptionParameters(subscription);
 		System.out.println(parameters.toString());
 
+		String tmp;
+
+		tmp = parameters.remove(parameterOu);
+		parameters.put("OU", tmp);
+
+		tmp = parameters.remove(parameterProject);
+		parameters.put("PROJECT", tmp);
+
+		tmp = parameters.remove(parameterLdapGroups);
+		parameters.put("LDAP_GROUPS", toBashReadableArray(tmp));
+
+		tmp = parameters.remove(parameterUrl);
+		parameters.put("URL", tmp);
+
+		tmp = parameters.remove(parameterUser);
+		parameters.put("USER", tmp);
+
+		tmp = parameters.remove(parameterPassword);
+		parameters.put("PASSWORD", tmp);
+
 		ScriptContext context = new ScriptContext();
 		context.setScriptId(createUrl);
 		context.setArgs(parameters);
@@ -113,11 +133,11 @@ public class GitPluginResource extends AbstractIndexBasedPluginResource implemen
 				StringUtils.appendIfMissing(parameters.get(parameterUrl), "/"), ParameterResource.toJSon(context),
 				HttpHeaders.CONTENT_TYPE + ":" + MediaType.APPLICATION_JSON);
 		request.setSaveResponse(true);
-		
+
 		// check if creation success
 		if (!newCurlProcessor(parameters).process(request)) {
 			throw new BusinessException(parameterRepository, simpleName + "-repository",
-					parameters.get(parameterRepository));
+					parameters.get(parameterRepository)); // TODO modify the exception to be thrown
 		}
 
 	}
