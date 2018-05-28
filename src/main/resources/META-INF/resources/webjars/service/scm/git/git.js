@@ -38,6 +38,7 @@ define(function () {
 					var $fieldset = previousProvider(parentParameter, container, $input).parent();
 					$input.attr('readonly', 'readonly');
 				};
+				configuration.renderers[id] = current.setPkey;
 			} else {
 				current.$super('registerXServiceSelect2')(configuration, id, 'service/scm/git/', null, true, null, false);
 			}
@@ -84,17 +85,23 @@ define(function () {
 		},
 		
 		registerIdLdapGroupsSelect2: function (configuration, $container, id) {
-			current.$super('registerXServiceSelect2')(configuration, id, 'service/id/ldap/group/subscriptions/' + 1, null, true, null, false);
+			current.$super('registerXServiceSelect2')(configuration, id, 'service/id/ldap/group/subscriptions/' + current.$super('model').id + '/', null, false);
 		},
 		
 		registerIdOu: function (configuration, $container, id) {
 			configuration.validators[id] = current.validateIdRepositoryCreateMode;
 			// Do other things specific to Ou
+			configuration.renderers[id] = current.setPkey;
 		},
 		
 		registerIdProject: function (configuration, $container, id) {
 			// Do other things specific to Project
 			configuration.validators[id] = current.validateIdRepositoryCreateMode;
+		},
+		
+		setPkey: function (parameter, $input) {
+			$input.val(current.$super('model').pkey);
+			$input.attr('readonly', 'readonly');
 		}
 	};
 	return current;
