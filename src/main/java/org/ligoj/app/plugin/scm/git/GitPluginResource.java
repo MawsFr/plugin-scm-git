@@ -22,6 +22,7 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.transport.http.HttpConnection;
 import org.eclipse.jgit.transport.http.JDKHttpConnectionFactory;
 import org.eclipse.jgit.util.HttpSupport;
+import org.ligoj.app.iam.IGroupRepository;
 import org.ligoj.app.plugin.scm.AbstractIndexBasedPluginResource;
 import org.ligoj.app.plugin.scm.ScmResource;
 import org.ligoj.app.plugin.scm.ScmServicePlugin;
@@ -115,10 +116,21 @@ public class GitPluginResource extends AbstractIndexBasedPluginResource implemen
 		parameters.put("PROJECT", tmp);
 
 		tmp = parameters.remove(parameterLdapGroups);
-		parameters.put("LDAP_GROUPS", toBashReadableArray(tmp));
+		String newGroupsArray = "(";
+		final IGroupRepository repository = getGroup();
+		String[] groups = tmp.split(",");
+		for (final String group : groups) {
+			newGroupsArray = newGroupsArray.concat(repository.findById(group).getDn() + " ");
+		}
+		newGroupsArray = newGroupsArray.trim().concat(")");
+
+		parameters.put("LDAP_GROUPS", newGroupsArray);
 
 		tmp = parameters.remove(parameterUrl);
 		parameters.put("URL", tmp);
+
+		tmp = parameters.remove(parameterUrlProxyAgent);
+		parameters.put("URL_PROXY_AGENT", tmp);
 
 		tmp = parameters.remove(parameterUser);
 		parameters.put("USER", tmp);
@@ -130,8 +142,8 @@ public class GitPluginResource extends AbstractIndexBasedPluginResource implemen
 		context.setScriptId(createUrl);
 		context.setArgs(parameters);
 		final CurlRequest request = new CurlRequest(HttpMethod.POST,
-				StringUtils.appendIfMissing(parameters.get(parameterUrl), "/"), ParameterResource.toJSon(context),
-				HttpHeaders.CONTENT_TYPE + ":" + MediaType.APPLICATION_JSON);
+				StringUtils.appendIfMissing(parameters.get(parameterUrlProxyAgent), "/"),
+				ParameterResource.toJSon(context), HttpHeaders.CONTENT_TYPE + ":" + MediaType.APPLICATION_JSON);
 		request.setSaveResponse(true);
 
 		// check if creation success

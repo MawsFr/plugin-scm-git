@@ -86,6 +86,37 @@ define(function () {
 		
 		registerIdLdapGroupsSelect2: function (configuration, $container, id) {
 			current.$super('registerXServiceSelect2')(configuration, id, 'service/id/ldap/group/subscriptions/' + current.$super('model').id + '/', null, false);
+			// Because multiple select2 won't work here
+			configuration.renderers[id] = function (parameter, $input) {
+				var formatResult = function (object) {
+					return object.name;
+				};
+				$input.select2({
+					multiple: true,
+					minimumInputLength: 1,
+					formatResult: formatResult,
+					formatSelection: formatResult,
+					createSearchChoice: function () {
+						// Disable additional values
+						return null;
+					},
+					formatSearching: function () {
+						return current.$messages.loading;
+					},
+					ajax: {
+						url: function (term) {
+							debugger;
+							return REST_PATH + 'service/id/ldap/group/subscriptions/' + current.$super('model').id + '/' + configuration.node + '/' + encodeURIComponent(term);
+						},
+						dataType: 'json',
+						results: function (data) {
+							return {
+								results: data.data || data
+							};
+						}
+					}
+				});
+			};
 		},
 		
 		registerIdOu: function (configuration, $container, id) {
