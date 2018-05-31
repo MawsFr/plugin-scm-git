@@ -142,8 +142,8 @@ public class GitPluginResource extends AbstractIndexBasedPluginResource implemen
 		context.setScriptId(createUrl);
 		context.setArgs(parameters);
 		final CurlRequest request = new CurlRequest(HttpMethod.POST,
-				StringUtils.appendIfMissing(parameters.get(parameterUrlProxyAgent), "/"),
-				ParameterResource.toJSon(context), HttpHeaders.CONTENT_TYPE + ":" + MediaType.APPLICATION_JSON);
+				StringUtils.appendIfMissing(parameters.get("URL_PROXY_AGENT"), "/"), ParameterResource.toJSon(context),
+				HttpHeaders.CONTENT_TYPE + ":" + MediaType.APPLICATION_JSON);
 		request.setSaveResponse(true);
 
 		// check if creation success
