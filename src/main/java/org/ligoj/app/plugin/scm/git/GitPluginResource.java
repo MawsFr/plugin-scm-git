@@ -116,21 +116,21 @@ public class GitPluginResource extends AbstractIndexBasedPluginResource implemen
 		parameters.put("PROJECT", tmp);
 
 		tmp = parameters.remove(parameterLdapGroups);
-		String newGroupsArray = "(";
+		String newGroupsArray = "";
 		final IGroupRepository repository = getGroup();
 		String[] groups = tmp.split(",");
 		for (final String group : groups) {
 			newGroupsArray = newGroupsArray.concat(repository.findById(group).getDn() + " ");
 		}
-		newGroupsArray = newGroupsArray.trim().concat(")");
+		newGroupsArray = newGroupsArray.trim();
 
 		parameters.put("LDAP_GROUPS", newGroupsArray);
 
 		tmp = parameters.remove(parameterUrl);
-		parameters.put("URL", tmp);
+		parameters.put("URL", StringUtils.appendIfMissing(tmp, "/"));
 
 		tmp = parameters.remove(parameterUrlProxyAgent);
-		parameters.put("URL_PROXY_AGENT", tmp);
+		parameters.put("URL_PROXY_AGENT", StringUtils.appendIfMissing(tmp, "/"));
 
 		tmp = parameters.remove(parameterUser);
 		parameters.put("USER", tmp);
@@ -141,9 +141,8 @@ public class GitPluginResource extends AbstractIndexBasedPluginResource implemen
 		ScriptContext context = new ScriptContext();
 		context.setScriptId(createUrl);
 		context.setArgs(parameters);
-		final CurlRequest request = new CurlRequest(HttpMethod.POST,
-				StringUtils.appendIfMissing(parameters.get("URL_PROXY_AGENT"), "/"), ParameterResource.toJSon(context),
-				HttpHeaders.CONTENT_TYPE + ":" + MediaType.APPLICATION_JSON);
+		final CurlRequest request = new CurlRequest(HttpMethod.POST, parameters.get("URL_PROXY_AGENT"),
+				ParameterResource.toJSon(context), HttpHeaders.CONTENT_TYPE + ":" + MediaType.APPLICATION_JSON);
 		request.setSaveResponse(true);
 
 		// check if creation success

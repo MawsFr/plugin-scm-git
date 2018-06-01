@@ -1,5 +1,1 @@
-id;owner.id;data;mandatory;type;mode;secured
-service:scm:git:url;service:scm:git;;true;TEXT;;
-service:scm:git:user;service:scm:git;;true;TEXT;;true
-service:scm:git:password;service:scm:git;;true;TEXT;;true
-service:scm:git:index;service:scm:git;;false;BOOL;;
+id;mandatory;mode;secured;type;owner.id;data
